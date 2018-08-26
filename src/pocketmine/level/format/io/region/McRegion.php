@@ -371,4 +371,28 @@ class McRegion extends BaseLevelProvider{
 
 		$this->getRegion($regionX, $regionZ)->writeChunk($chunkX & 0x1f, $chunkZ & 0x1f, $this->nbtSerialize($chunk));
 	}
+
+	public function getAllChunks() : \Generator{
+		$regions = array_filter(scandir($this->path . "/region/", SCANDIR_SORT_NONE), function($file){
+			return substr($file, strrpos($file, ".") + 1) === static::REGION_FILE_EXTENSION;
+		});
+		foreach($regions as $region){
+			[, $rXstr, $rZstr, ] = explode(".", $region);
+			$rX = (int) $rXstr;
+			$rZ = (int) $rZstr;
+
+			$this->loadRegion($rX, $rZ);
+			$region = $this->getRegion($rX, $rZ);
+			assert($region !== null);
+
+			for($pX = 0; $pX < 32; ++$pX){
+				for($pZ = 0; $pZ < 32; ++$pZ){
+					$chunk = $this->loadChunk($rX | $pX, $rZ | $pZ);
+					if($chunk !== null){
+						yield $chunk;
+					}
+				}
+			}
+		}
+	}
 }
