@@ -378,8 +378,8 @@ class McRegion extends BaseLevelProvider{
 		});
 		foreach($regions as $region){
 			[, $rXstr, $rZstr, ] = explode(".", $region);
-			$rX = (int) $rXstr;
-			$rZ = (int) $rZstr;
+			$rX = ((int) $rXstr) << 5;
+			$rZ = ((int) $rZstr) << 5;
 
 			$this->loadRegion($rX, $rZ);
 			$region = $this->getRegion($rX, $rZ);
