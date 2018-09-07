@@ -381,10 +381,6 @@ class McRegion extends BaseLevelProvider{
 			$rX = ((int) $rXstr) << 5;
 			$rZ = ((int) $rZstr) << 5;
 
-			$this->loadRegion($rX, $rZ);
-			$region = $this->getRegion($rX, $rZ);
-			assert($region !== null);
-
 			for($pX = 0; $pX < 32; ++$pX){
 				for($pZ = 0; $pZ < 32; ++$pZ){
 					$chunk = $this->loadChunk($rX | $pX, $rZ | $pZ);
