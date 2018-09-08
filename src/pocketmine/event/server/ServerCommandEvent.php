@@ -33,6 +33,8 @@ use pocketmine\event\Cancellable;
  * blocking commands on certain places, or applying modifiers.
  *
  * The message DOES NOT contain a slash at the start
+ *
+ * @deprecated Use CommandEvent instead.
  */
 class ServerCommandEvent extends ServerEvent implements Cancellable{
 	/** @var string */

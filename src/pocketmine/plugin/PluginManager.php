@@ -34,13 +34,13 @@ use pocketmine\event\plugin\PluginEnableEvent;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\permission\Permissible;
 use pocketmine\permission\Permission;
+use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
-use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\Utils;
 
 /**
- * Manages all the plugins, Permissions and Permissibles
+ * Manages all the plugins
  */
 class PluginManager{
 	private const MAX_EVENT_CALL_DEPTH = 50;
@@ -60,36 +60,6 @@ class PluginManager{
 	 * @var Plugin[]
 	 */
 	protected $enabledPlugins = [];
-
-	/**
-	 * @var Permission[]
-	 */
-	protected $permissions = [];
-
-	/**
-	 * @var Permission[]
-	 */
-	protected $defaultPerms = [];
-
-	/**
-	 * @var Permission[]
-	 */
-	protected $defaultPermsOp = [];
-
-	/**
-	 * @var Permissible[][]
-	 */
-	protected $permSubs = [];
-
-	/**
-	 * @var Permissible[]
-	 */
-	protected $defSubs = [];
-
-	/**
-	 * @var Permissible[]
-	 */
-	protected $defSubsOp = [];
 
 	/**
 	 * @var PluginLoader[]
@@ -177,6 +147,9 @@ class PluginManager{
 					if(file_exists($dataFolder) and !is_dir($dataFolder)){
 						$this->server->getLogger()->error("Projected dataFolder '" . $dataFolder . "' for " . $description->getName() . " exists and is not a directory");
 						return null;
+					}
+					if(!file_exists($dataFolder)){
+						mkdir($dataFolder, 0777, true);
 					}
 
 					$prefixed = $loader->getAccessProtocol() . $path;
@@ -425,166 +398,137 @@ class PluginManager{
 	}
 
 	/**
+	 * @deprecated
+	 * @see PermissionManager::getPermission()
+	 *
 	 * @param string $name
 	 *
 	 * @return null|Permission
 	 */
 	public function getPermission(string $name){
-		return $this->permissions[$name] ?? null;
+		return PermissionManager::getInstance()->getPermission($name);
 	}
 
 	/**
+	 * @deprecated
+	 * @see PermissionManager::addPermission()
+	 *
 	 * @param Permission $permission
 	 *
 	 * @return bool
 	 */
 	public function addPermission(Permission $permission) : bool{
-		if(!isset($this->permissions[$permission->getName()])){
-			$this->permissions[$permission->getName()] = $permission;
-			$this->calculatePermissionDefault($permission);
-
-			return true;
-		}
-
-		return false;
+		return PermissionManager::getInstance()->addPermission($permission);
 	}
 
 	/**
+	 * @deprecated
+	 * @see PermissionManager::removePermission()
+	 *
 	 * @param string|Permission $permission
 	 */
 	public function removePermission($permission){
-		if($permission instanceof Permission){
-			unset($this->permissions[$permission->getName()]);
-		}else{
-			unset($this->permissions[$permission]);
-		}
+		PermissionManager::getInstance()->removePermission($permission);
 	}
 
 	/**
+	 * @deprecated
+	 * @see PermissionManager::getDefaultPermissions()
+	 *
 	 * @param bool $op
 	 *
 	 * @return Permission[]
 	 */
 	public function getDefaultPermissions(bool $op) : array{
-		if($op){
-			return $this->defaultPermsOp;
-		}else{
-			return $this->defaultPerms;
-		}
+		return PermissionManager::getInstance()->getDefaultPermissions($op);
 	}
 
 	/**
+	 * @deprecated
+	 * @see PermissionManager::recalculatePermissionDefaults()
+	 *
 	 * @param Permission $permission
 	 */
 	public function recalculatePermissionDefaults(Permission $permission){
-		if(isset($this->permissions[$permission->getName()])){
-			unset($this->defaultPermsOp[$permission->getName()]);
-			unset($this->defaultPerms[$permission->getName()]);
-			$this->calculatePermissionDefault($permission);
-		}
+		PermissionManager::getInstance()->recalculatePermissionDefaults($permission);
 	}
 
 	/**
-	 * @param Permission $permission
-	 */
-	private function calculatePermissionDefault(Permission $permission){
-		Timings::$permissionDefaultTimer->startTiming();
-		if($permission->getDefault() === Permission::DEFAULT_OP or $permission->getDefault() === Permission::DEFAULT_TRUE){
-			$this->defaultPermsOp[$permission->getName()] = $permission;
-			$this->dirtyPermissibles(true);
-		}
-
-		if($permission->getDefault() === Permission::DEFAULT_NOT_OP or $permission->getDefault() === Permission::DEFAULT_TRUE){
-			$this->defaultPerms[$permission->getName()] = $permission;
-			$this->dirtyPermissibles(false);
-		}
-		Timings::$permissionDefaultTimer->startTiming();
-	}
-
-	/**
-	 * @param bool $op
-	 */
-	private function dirtyPermissibles(bool $op){
-		foreach($this->getDefaultPermSubscriptions($op) as $p){
-			$p->recalculatePermissions();
-		}
-	}
-
-	/**
+	 * @deprecated
+	 * @see PermissionManager::subscribeToPermission()
+	 *
 	 * @param string      $permission
 	 * @param Permissible $permissible
 	 */
 	public function subscribeToPermission(string $permission, Permissible $permissible){
-		if(!isset($this->permSubs[$permission])){
-			$this->permSubs[$permission] = [];
-		}
-		$this->permSubs[$permission][spl_object_hash($permissible)] = $permissible;
+		PermissionManager::getInstance()->subscribeToPermission($permission, $permissible);
 	}
 
 	/**
+	 * @deprecated
+	 * @see PermissionManager::unsubscribeFromPermission()
+	 *
 	 * @param string      $permission
 	 * @param Permissible $permissible
 	 */
 	public function unsubscribeFromPermission(string $permission, Permissible $permissible){
-		if(isset($this->permSubs[$permission])){
-			unset($this->permSubs[$permission][spl_object_hash($permissible)]);
-			if(count($this->permSubs[$permission]) === 0){
-				unset($this->permSubs[$permission]);
-			}
-		}
+		PermissionManager::getInstance()->unsubscribeFromPermission($permission, $permissible);
 	}
 
 	/**
+	 * @deprecated
+	 * @see PermissionManager::getPermissionSubscriptions()
+	 *
 	 * @param string $permission
 	 *
 	 * @return array|Permissible[]
 	 */
 	public function getPermissionSubscriptions(string $permission) : array{
-		return $this->permSubs[$permission] ?? [];
+		return PermissionManager::getInstance()->getPermissionSubscriptions($permission);
 	}
 
 	/**
+	 * @deprecated
+	 * @see PermissionManager::subscribeToDefaultPerms()
+	 *
 	 * @param bool        $op
 	 * @param Permissible $permissible
 	 */
 	public function subscribeToDefaultPerms(bool $op, Permissible $permissible){
-		if($op){
-			$this->defSubsOp[spl_object_hash($permissible)] = $permissible;
-		}else{
-			$this->defSubs[spl_object_hash($permissible)] = $permissible;
-		}
+		PermissionManager::getInstance()->subscribeToDefaultPerms($op, $permissible);
 	}
 
 	/**
+	 * @deprecated
+	 * @see PermissionManager::unsubscribeFromDefaultPerms()
+	 *
 	 * @param bool        $op
 	 * @param Permissible $permissible
 	 */
 	public function unsubscribeFromDefaultPerms(bool $op, Permissible $permissible){
-		if($op){
-			unset($this->defSubsOp[spl_object_hash($permissible)]);
-		}else{
-			unset($this->defSubs[spl_object_hash($permissible)]);
-		}
+		PermissionManager::getInstance()->unsubscribeFromDefaultPerms($op, $permissible);
 	}
 
 	/**
+	 * @deprecated
+	 * @see PermissionManager::getDefaultPermSubscriptions()
+	 *
 	 * @param bool $op
 	 *
 	 * @return Permissible[]
 	 */
 	public function getDefaultPermSubscriptions(bool $op) : array{
-		if($op){
-			return $this->defSubsOp;
-		}
-
-		return $this->defSubs;
+		return PermissionManager::getInstance()->getDefaultPermSubscriptions($op);
 	}
 
 	/**
+	 * @deprecated
+	 * @see PermissionManager::getPermissions()
+	 *
 	 * @return Permission[]
 	 */
 	public function getPermissions() : array{
-		return $this->permissions;
+		return PermissionManager::getInstance()->getPermissions();
 	}
 
 	/**
@@ -604,8 +548,9 @@ class PluginManager{
 			try{
 				$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.enable", [$plugin->getDescription()->getFullName()]));
 
+				$permManager = PermissionManager::getInstance();
 				foreach($plugin->getDescription()->getPermissions() as $perm){
-					$this->addPermission($perm);
+					$permManager->addPermission($perm);
 				}
 				$plugin->getScheduler()->setEnabled(true);
 				$plugin->setEnabled(true);
@@ -700,8 +645,9 @@ class PluginManager{
 			}
 			$plugin->getScheduler()->shutdown();
 			HandlerList::unregisterAll($plugin);
+			$permManager = PermissionManager::getInstance();
 			foreach($plugin->getDescription()->getPermissions() as $perm){
-				$this->removePermission($perm);
+				$permManager->removePermission($perm);
 			}
 		}
 	}
@@ -717,9 +663,6 @@ class PluginManager{
 		$this->plugins = [];
 		$this->enabledPlugins = [];
 		$this->fileAssociations = [];
-		$this->permissions = [];
-		$this->defaultPerms = [];
-		$this->defaultPermsOp = [];
 	}
 
 	/**
@@ -791,7 +734,21 @@ class PluginManager{
 				}catch(\InvalidArgumentException $e){
 					throw new PluginException("Event handler " . get_class($listener) . "->" . $method->getName() . "() declares invalid/unknown priority \"" . $tags["priority"] . "\"");
 				}
-				$ignoreCancelled = isset($tags["ignoreCancelled"]) && strtolower($tags["ignoreCancelled"]) === "true";
+
+				$ignoreCancelled = false;
+				if(isset($tags["ignoreCancelled"])){
+					switch(strtolower($tags["ignoreCancelled"])){
+						case "true":
+						case "":
+							$ignoreCancelled = true;
+							break;
+						case "false":
+							$ignoreCancelled = false;
+							break;
+						default:
+							throw new PluginException("Event handler " . get_class($listener) . "->" . $method->getName() . "() declares invalid @ignoreCancelled value \"" . $tags["ignoreCancelled"] . "\"");
+					}
+				}
 
 				$parameters = $method->getParameters();
 				try{

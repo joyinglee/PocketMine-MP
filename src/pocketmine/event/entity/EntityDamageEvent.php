@@ -38,6 +38,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	public const MODIFIER_ARMOR_ENCHANTMENTS = 6;
 	public const MODIFIER_CRITICAL = 7;
 	public const MODIFIER_TOTEM = 8;
+	public const MODIFIER_WEAPON_ENCHANTMENTS = 9;
 
 	public const CAUSE_CONTACT = 0;
 	public const CAUSE_ENTITY_ATTACK = 1;
@@ -67,6 +68,9 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	private $modifiers;
 	/** @var float[] */
 	private $originals;
+
+	/** @var int */
+	private $attackCooldown = 10;
 
 
 	/**
@@ -195,5 +199,25 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 		}
 
 		return true;
+	}
+
+	/**
+	 * Returns the cooldown in ticks before the target entity can be attacked again.
+	 *
+	 * @return int
+	 */
+	public function getAttackCooldown() : int{
+		return $this->attackCooldown;
+	}
+
+	/**
+	 * Sets the cooldown in ticks before the target entity can be attacked again.
+	 *
+	 * NOTE: This value is not used in non-Living entities
+	 *
+	 * @param int $attackCooldown
+	 */
+	public function setAttackCooldown(int $attackCooldown) : void{
+		$this->attackCooldown = $attackCooldown;
 	}
 }
