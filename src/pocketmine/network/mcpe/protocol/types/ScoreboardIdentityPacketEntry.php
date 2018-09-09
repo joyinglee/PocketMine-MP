@@ -21,29 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\network\mcpe\protocol\types;
 
-class Pumpkin extends Solid{
+use pocketmine\utils\UUID;
 
-	protected $id = self::PUMPKIN;
+class ScoreboardIdentityPacketEntry{
+	/** @var int */
+	public $scoreboardId;
+	/** @var UUID|null */
+	public $uuid;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
-	}
-
-	public function getHardness() : float{
-		return 1;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_AXE;
-	}
-
-	public function getName() : string{
-		return "Pumpkin";
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
-	}
 }

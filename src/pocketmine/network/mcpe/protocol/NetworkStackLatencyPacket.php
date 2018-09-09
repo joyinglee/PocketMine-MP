@@ -21,29 +21,27 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\network\mcpe\protocol;
 
-class Pumpkin extends Solid{
+#include <rules/DataPacket.h>
 
-	protected $id = self::PUMPKIN;
+use pocketmine\network\mcpe\handler\SessionHandler;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+class NetworkStackLatencyPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::NETWORK_STACK_LATENCY_PACKET;
+
+	/** @var int */
+	public $timestamp;
+
+	protected function decodePayload() : void{
+		$this->timestamp = $this->getLLong();
 	}
 
-	public function getHardness() : float{
-		return 1;
+	protected function encodePayload() : void{
+		$this->putLLong($this->timestamp);
 	}
 
-	public function getToolType() : int{
-		return BlockToolType::TYPE_AXE;
-	}
-
-	public function getName() : string{
-		return "Pumpkin";
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
+	public function handle(SessionHandler $session) : bool{
+		return $session->handleNetworkStackLatency($this);
 	}
 }
