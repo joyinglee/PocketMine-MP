@@ -423,9 +423,9 @@ class McRegion extends BaseLevelProvider{
 			$rX = ((int) $rXstr) << 5;
 			$rZ = ((int) $rZstr) << 5;
 
-			for($pX = 0; $pX < 32; ++$pX){
-				for($pZ = 0; $pZ < 32; ++$pZ){
-					$chunk = $this->loadChunk($rX | $pX, $rZ | $pZ);
+			for($chunkX = $rX; $chunkX < $rX + 32; ++$chunkX){
+				for($chunkZ = $rZ; $chunkZ < $rZ + 32; ++$chunkZ){
+					$chunk = $this->loadChunk($chunkX, $chunkZ);
 					if($chunk !== null){
 						yield $chunk;
 					}
