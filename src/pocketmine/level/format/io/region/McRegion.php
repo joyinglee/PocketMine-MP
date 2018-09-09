@@ -415,13 +415,18 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	public function getAllChunks() : \Generator{
-		$regions = array_filter(scandir($this->path . "/region/", SCANDIR_SORT_NONE), function($file){
-			return substr($file, strrpos($file, ".") + 1) === static::REGION_FILE_EXTENSION;
-		});
-		foreach($regions as $region){
-			[, $rXstr, $rZstr, ] = explode(".", $region);
-			$rX = ((int) $rXstr) << 5;
-			$rZ = ((int) $rZstr) << 5;
+		$iterator = new \RegexIterator(
+			new \FilesystemIterator(
+				$this->path . '/region/',
+				\FilesystemIterator::CURRENT_AS_PATHNAME | \FilesystemIterator::SKIP_DOTS
+			),
+			'/r\.(-?\d+)\.(-?\d+)\.' . static::REGION_FILE_EXTENSION . '/',
+			\RegexIterator::GET_MATCH
+		);
+
+		foreach($iterator as $region){
+			$rX = ((int) $region[1]) << 5;
+			$rZ = ((int) $region[2]) << 5;
 
 			for($chunkX = $rX; $chunkX < $rX + 32; ++$chunkX){
 				for($chunkZ = $rZ; $chunkZ < $rZ + 32; ++$chunkZ){
