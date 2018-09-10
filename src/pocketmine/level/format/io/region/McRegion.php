@@ -418,9 +418,9 @@ class McRegion extends BaseLevelProvider{
 		$iterator = new \RegexIterator(
 			new \FilesystemIterator(
 				$this->path . '/region/',
-				\FilesystemIterator::CURRENT_AS_PATHNAME | \FilesystemIterator::SKIP_DOTS
+				\FilesystemIterator::CURRENT_AS_PATHNAME | \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS
 			),
-			'/r\.(-?\d+)\.(-?\d+)\.' . static::REGION_FILE_EXTENSION . '/',
+			'/\/r\.(-?\d+)\.(-?\d+)\.' . static::REGION_FILE_EXTENSION . '$/',
 			\RegexIterator::GET_MATCH
 		);
 
