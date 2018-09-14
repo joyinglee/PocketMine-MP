@@ -23,9 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\event\block;
 
-use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
 use pocketmine\item\Item;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 /**
@@ -46,15 +47,16 @@ class BlockBreakEvent extends BlockEvent implements Cancellable{
 	protected $xpDrops;
 
 	/**
-	 * @param Player $player
-	 * @param Block  $block
-	 * @param Item   $item
-	 * @param bool   $instaBreak
-	 * @param Item[] $drops
-	 * @param int    $xpDrops
+	 * @param Level   $level
+	 * @param Vector3 $blockPos
+	 * @param Player  $player
+	 * @param Item    $item
+	 * @param bool    $instaBreak
+	 * @param Item[]  $drops
+	 * @param int     $xpDrops
 	 */
-	public function __construct(Player $player, Block $block, Item $item, bool $instaBreak = false, array $drops, int $xpDrops = 0){
-		parent::__construct($block);
+	public function __construct(Level $level, Vector3 $blockPos, Player $player, Item $item, bool $instaBreak = false, array $drops = [], int $xpDrops = 0){
+		parent::__construct($level, $blockPos);
 		$this->item = $item;
 		$this->player = $player;
 

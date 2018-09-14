@@ -42,7 +42,7 @@ class FurnaceSmeltEvent extends BlockEvent implements Cancellable{
 	 * @param Item $result
 	 */
 	public function __construct(Furnace $furnace, Item $source, Item $result){
-		parent::__construct($furnace->getBlock());
+		parent::__construct($furnace->getLevel(), $furnace->getBlock()->asVector3());
 		$this->source = clone $source;
 		$this->source->setCount(1);
 		$this->result = $result;

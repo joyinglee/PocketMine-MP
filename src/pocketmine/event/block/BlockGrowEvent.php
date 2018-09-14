@@ -25,6 +25,8 @@ namespace pocketmine\event\block;
 
 use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 
 /**
  * Called when plants or crops grow.
@@ -33,8 +35,8 @@ class BlockGrowEvent extends BlockEvent implements Cancellable{
 	/** @var Block */
 	private $newState;
 
-	public function __construct(Block $block, Block $newState){
-		parent::__construct($block);
+	public function __construct(Level $level, Vector3 $blockPos, Block $newState){
+		parent::__construct($level, $blockPos);
 		$this->newState = $newState;
 	}
 

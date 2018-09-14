@@ -153,7 +153,7 @@ class Fire extends Flowable{
 
 	private function burnBlock(Block $block, int $chanceBound) : void{
 		if(mt_rand(0, $chanceBound) < $block->getFlammability()){
-			$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockBurnEvent($block, $this));
+			$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockBurnEvent($this->level, $block->asVector3(), $this->asVector3()));
 			if(!$ev->isCancelled()){
 				$block->onIncinerate();
 

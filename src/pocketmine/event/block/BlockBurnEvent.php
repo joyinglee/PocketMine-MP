@@ -23,26 +23,29 @@ declare(strict_types=1);
 
 namespace pocketmine\event\block;
 
-use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 
 /**
  * Called when a block is burned away by fire.
  */
 class BlockBurnEvent extends BlockEvent implements Cancellable{
-	/** @var Block */
-	private $causingBlock;
+	/** @var Vector3 */
+	private $causingBlockPos;
 
-	public function __construct(Block $block, Block $causingBlock){
-		parent::__construct($block);
-		$this->causingBlock = $causingBlock;
+	public function __construct(Level $level, Vector3 $blockPos, Vector3 $causingBlockPos){
+		parent::__construct($level, $blockPos);
+		$this->level = $level;
+		$this->blockPos = $blockPos;
+		$this->causingBlockPos = $causingBlockPos;
 	}
 
 	/**
-	 * Returns the block (usually Fire) which caused the target block to be burned away.
-	 * @return Block
+	 * Returns the position of the block which caused the target block to be burned away.
+	 * @return Vector3
 	 */
-	public function getCausingBlock() : Block{
-		return $this->causingBlock;
+	public function getCausingBlock() : Vector3{
+		return $this->causingBlockPos;
 	}
 }

@@ -24,23 +24,26 @@ declare(strict_types=1);
 namespace pocketmine\event\block;
 
 use pocketmine\block\Block;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 
 /**
  * Called when a block spreads to another block, such as grass spreading to nearby dirt blocks.
  */
 class BlockSpreadEvent extends BlockFormEvent{
-	/** @var Block */
+	/** @var Vector3 */
 	private $source;
 
-	public function __construct(Block $block, Block $source, Block $newState){
-		parent::__construct($block, $newState);
+	public function __construct(Level $level, Vector3 $blockPos, Block $newState, Vector3 $source){
+		parent::__construct($level, $blockPos, $newState);
 		$this->source = $source;
+		$this->level = $level;
 	}
 
 	/**
-	 * @return Block
+	 * @return Vector3
 	 */
-	public function getSource() : Block{
+	public function getSource() : Vector3{
 		return $this->source;
 	}
 }

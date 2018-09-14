@@ -30,6 +30,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\item\Shovel;
 use pocketmine\level\generator\object\TallGrass as TallGrassObject;
 use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\Random;
 
@@ -67,7 +68,7 @@ class Grass extends Solid{
 		$lightAbove = $this->level->getFullLightAt($this->x, $this->y + 1, $this->z);
 		if($lightAbove < 4 and BlockFactory::$lightFilter[$this->level->getBlockIdAt($this->x, $this->y + 1, $this->z)] >= 3){ //2 plus 1 standard filter amount
 			//grass dies
-			$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($this, $this, BlockFactory::get(Block::DIRT)));
+			$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($this->level, $this->asVector3(), BlockFactory::get(Block::DIRT), $this->asVector3()));
 			if(!$ev->isCancelled()){
 				$this->level->setBlock($this, $ev->getNewState(), false, false);
 			}
@@ -86,7 +87,7 @@ class Grass extends Solid{
 					continue;
 				}
 
-				$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($b = $this->level->getBlockAt($x, $y, $z), $this, BlockFactory::get(Block::GRASS)));
+				$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($this->level, $b = new Vector3($x, $y, $z), BlockFactory::get(Block::GRASS), $this->asVector3()));
 				if(!$ev->isCancelled()){
 					$this->level->setBlock($b, $ev->getNewState(), false, false);
 				}

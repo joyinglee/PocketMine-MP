@@ -26,12 +26,18 @@ namespace pocketmine\event\block;
 use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
 use pocketmine\item\Item;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 /**
  * Called when a player places a block
  */
 class BlockPlaceEvent extends BlockEvent implements Cancellable{
+
+	/** @var Vector3 */
+	protected $blockAgainst;
+
 	/** @var Player */
 	protected $player;
 
@@ -39,16 +45,14 @@ class BlockPlaceEvent extends BlockEvent implements Cancellable{
 	protected $item;
 
 	/** @var Block */
-	protected $blockReplace;
-	/** @var Block */
-	protected $blockAgainst;
+	protected $blockState;
 
-	public function __construct(Player $player, Block $blockPlace, Block $blockReplace, Block $blockAgainst, Item $item){
-		parent::__construct($blockPlace);
-		$this->blockReplace = $blockReplace;
+	public function __construct(Level $level, Vector3 $blockReplace, Vector3 $blockAgainst, Player $player, Item $item, Block $blockState){
+		parent::__construct($level, $blockReplace);
 		$this->blockAgainst = $blockAgainst;
-		$this->item = $item;
 		$this->player = $player;
+		$this->item = $item;
+		$this->blockState = $blockState;
 	}
 
 	/**
@@ -68,16 +72,18 @@ class BlockPlaceEvent extends BlockEvent implements Cancellable{
 	}
 
 	/**
-	 * @return Block
+	 * @return Vector3
 	 */
-	public function getBlockReplaced() : Block{
-		return $this->blockReplace;
+	public function getAgainstPos() : Vector3{
+		return $this->blockAgainst;
 	}
 
 	/**
+	 * Returns the state of the newly-placed block.
+	 *
 	 * @return Block
 	 */
-	public function getBlockAgainst() : Block{
-		return $this->blockAgainst;
+	public function getBlock() : Block{
+		return $this->blockState;
 	}
 }

@@ -727,7 +727,7 @@ class Level implements ChunkManager, Metadatable{
 			$block = $this->getBlockAt($x, $y, $z);
 			$block->clearCaches(); //for blocks like fences, force recalculation of connected AABBs
 
-			$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($block));
+			$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this, $block->asVector3()));
 			if(!$ev->isCancelled()){
 				$block->onNearbyBlockChange();
 			}
@@ -1549,12 +1549,12 @@ class Level implements ChunkManager, Metadatable{
 			if($update){
 				$this->updateAllLight($block);
 
-				$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($block));
+				$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this, $pos));
 				if(!$ev->isCancelled()){
 					foreach($this->getNearbyEntities(new AxisAlignedBB($block->x - 1, $block->y - 1, $block->z - 1, $block->x + 2, $block->y + 2, $block->z + 2)) as $entity){
 						$entity->onNearbyBlockChange();
 					}
-					$ev->getBlock()->onNearbyBlockChange();
+					$block->onNearbyBlockChange();
 					$this->scheduleNeighbourBlockUpdates($pos);
 				}
 			}
@@ -1686,7 +1686,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		if($player !== null){
-			$ev = new BlockBreakEvent($player, $target, $item, $player->isCreative(), $drops, $xpDrop);
+			$ev = new BlockBreakEvent($this, $target->asVector3(), $player, $item, $player->isCreative(), $drops, $xpDrop);
 
 			if(($player->isSurvival() and !$target->isBreakable($item)) or $player->isSpectator()){
 				$ev->setCancelled();
@@ -1851,7 +1851,7 @@ class Level implements ChunkManager, Metadatable{
 
 
 		if($player !== null){
-			$ev = new BlockPlaceEvent($player, $hand, $blockReplace, $blockClicked, $item);
+			$ev = new BlockPlaceEvent($this, $blockReplace->asVector3(), $blockClicked->asVector3(), $player, $item, $hand);
 			if($this->checkSpawnProtection($player, $blockClicked)){
 				$ev->setCancelled();
 			}

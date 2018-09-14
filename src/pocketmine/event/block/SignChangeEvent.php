@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\event\block;
 
-use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
 use pocketmine\Player;
+use pocketmine\tile\Sign;
 
 /**
  * Called when a sign is changed by a player.
@@ -35,16 +35,26 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 	private $player;
 	/** @var string[] */
 	private $lines = [];
+	/** @var Sign */
+	private $sign;
 
 	/**
-	 * @param Block    $theBlock
+	 * @param Sign     $sign
 	 * @param Player   $thePlayer
 	 * @param string[] $theLines
 	 */
-	public function __construct(Block $theBlock, Player $thePlayer, array $theLines){
-		parent::__construct($theBlock);
+	public function __construct(Sign $sign, Player $thePlayer, array $theLines){
+		parent::__construct($sign->getLevel(), $sign->getBlock()->asVector3());
 		$this->player = $thePlayer;
+		$this->sign = $sign;
 		$this->setLines($theLines);
+	}
+
+	/**
+	 * @return Sign
+	 */
+	public function getSign() : Sign{
+		return $this->sign;
 	}
 
 	/**

@@ -26,24 +26,36 @@ declare(strict_types=1);
  */
 namespace pocketmine\event\block;
 
-use pocketmine\block\Block;
 use pocketmine\event\Event;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 
 abstract class BlockEvent extends Event{
-	/** @var Block */
-	protected $block;
+	/** @var Level */
+	protected $level;
+	/** @var Vector3 */
+	protected $blockPos;
 
 	/**
-	 * @param Block $block
+	 * @param Level   $level
+	 * @param Vector3 $blockPos
 	 */
-	public function __construct(Block $block){
-		$this->block = $block;
+	public function __construct(Level $level, Vector3 $blockPos){
+		$this->level = $level;
+		$this->blockPos = $blockPos;
 	}
 
 	/**
-	 * @return Block
+	 * @return Vector3
 	 */
-	public function getBlock() : Block{
-		return $this->block;
+	public function getBlockPos() : Vector3{
+		return $this->blockPos;
+	}
+
+	/**
+	 * @return Level
+	 */
+	public function getLevel() : Level{
+		return $this->level;
 	}
 }

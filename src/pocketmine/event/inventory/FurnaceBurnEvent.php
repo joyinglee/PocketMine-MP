@@ -44,7 +44,7 @@ class FurnaceBurnEvent extends BlockEvent implements Cancellable{
 	 * @param int $burnTime
 	 */
 	public function __construct(Furnace $furnace, Item $fuel, int $burnTime){
-		parent::__construct($furnace->getBlock());
+		parent::__construct($furnace->getLevel(), $furnace->getBlock()->asVector3());
 		$this->fuel = $fuel;
 		$this->burnTime = $burnTime;
 		$this->furnace = $furnace;

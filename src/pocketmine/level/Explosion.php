@@ -235,12 +235,12 @@ class Explosion{
 					continue;
 				}
 				if(!isset($this->affectedBlocks[$index = Level::blockHash($sideBlock->x, $sideBlock->y, $sideBlock->z)]) and !isset($updateBlocks[$index])){
-					$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->level->getBlockAt($sideBlock->x, $sideBlock->y, $sideBlock->z)));
+					$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->level, $sideBlock));
 					if(!$ev->isCancelled()){
 						foreach($this->level->getNearbyEntities(new AxisAlignedBB($sideBlock->x - 1, $sideBlock->y - 1, $sideBlock->z - 1, $sideBlock->x + 2, $sideBlock->y + 2, $sideBlock->z + 2)) as $entity){
 							$entity->onNearbyBlockChange();
 						}
-						$ev->getBlock()->onNearbyBlockChange();
+						$this->level->getBlock($ev->getBlockPos())->onNearbyBlockChange();
 					}
 					$updateBlocks[$index] = true;
 				}

@@ -106,7 +106,7 @@ class Leaves extends Transparent{
 		if(($this->meta & 0b00001100) === 0x08){
 			$this->meta &= 0x03;
 
-			$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new LeavesDecayEvent($this));
+			$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new LeavesDecayEvent($this->level, $this->asVector3()));
 
 			if($ev->isCancelled() or $this->findLog($this)){
 				$this->getLevel()->setBlock($this, $this, false, false);
